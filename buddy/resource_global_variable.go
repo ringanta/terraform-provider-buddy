@@ -14,6 +14,9 @@ func resourceGlobalVariable() *schema.Resource {
 		ReadContext:   resourceGlobalVariableRead,
 		UpdateContext: resourceGlobalVariableUpdate,
 		DeleteContext: resourceGlobalVariableDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"key": {
 				Type:        schema.TypeString,

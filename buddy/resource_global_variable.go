@@ -146,5 +146,12 @@ func resourceGlobalVariableUpdate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceGlobalVariableDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(buddyClient)
+
+	id := d.Id()
+	err := client.DeleteGlobalVariable(id)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

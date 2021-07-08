@@ -47,6 +47,7 @@ type buddyClient interface {
 	CreateGlobalVariable(key string, value string, varType string, description string, settable bool, encrypted bool) (*buddyResponseGlobalVariable, error)
 	ReadGlobalVariable(id string) (*buddyResponseGlobalVariable, error)
 	UpdateGlobalVariable(id string, key string, value string, varType string, description string, settable bool, encrypted bool) (*buddyResponseGlobalVariable, error)
+	DeleteGlobalVariable(id string) error
 }
 
 func newBuddyClient(c *Config) *buddyAdapter {
@@ -122,6 +123,10 @@ func (b *buddyAdapter) ReadGlobalVariable(id string) (*buddyResponseGlobalVariab
 	defer resp.Body.Close()
 
 	var data buddyResponseGlobalVariable
+	if resp.StatusCode == 404 {
+		return &data, nil
+	}
+
 	if resp.StatusCode != 200 {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -178,4 +183,27 @@ func (b *buddyAdapter) UpdateGlobalVariable(id string, key string, value string,
 		return nil, err
 	}
 	return &data, nil
+}
+
+func (b *buddyAdapter) DeleteGlobalVariable(id string) error {
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%v/%v/%v", b.BuddyURL, "variables", id), nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", b.Token))
+	resp, err := b.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 204 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("Expected return code is 204 but got %v. Failed to read response body with the following message: %v", resp.StatusCode, err.Error())
+		}
+		return fmt.Errorf("Expected return code is 204 but got %v with the following response body %v", resp.StatusCode, string(body))
+	}
+	return nil
 }

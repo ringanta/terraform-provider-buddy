@@ -127,7 +127,22 @@ func resourceGlobalVariableRead(ctx context.Context, d *schema.ResourceData, m i
 }
 
 func resourceGlobalVariableUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return nil
+	client := m.(buddyClient)
+
+	id := d.Id()
+	key := d.Get("key").(string)
+	value := d.Get("value").(string)
+	varType := d.Get("type").(string)
+	description := d.Get("description").(string)
+	settable := d.Get("settable").(bool)
+	encrypted := d.Get("encrypted").(bool)
+
+	_, err := client.UpdateGlobalVariable(id, key, value, varType, description, settable, encrypted)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	return resourceGlobalVariableRead(ctx, d, m)
 }
 
 func resourceGlobalVariableDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

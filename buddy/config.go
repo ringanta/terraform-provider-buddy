@@ -46,6 +46,7 @@ type buddyRequestGlobalVariable struct {
 type buddyClient interface {
 	CreateGlobalVariable(key string, value string, varType string, description string, settable bool, encrypted bool) (*buddyResponseGlobalVariable, error)
 	ReadGlobalVariable(id string) (*buddyResponseGlobalVariable, error)
+	UpdateGlobalVariable(id string, key string, value string, varType string, description string, settable bool, encrypted bool) (*buddyResponseGlobalVariable, error)
 }
 
 func newBuddyClient(c *Config) *buddyAdapter {
@@ -114,6 +115,49 @@ func (b *buddyAdapter) ReadGlobalVariable(id string) (*buddyResponseGlobalVariab
 	}
 
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", b.Token))
+	resp, err := b.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var data buddyResponseGlobalVariable
+	if resp.StatusCode != 200 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("Expected return code is 200 but got %v. Failed to read response body with the following message: %v", resp.StatusCode, err.Error())
+		}
+		return nil, fmt.Errorf("Expected return code is 200 but got %v with the following response body %v", resp.StatusCode, string(body))
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+	return &data, nil
+}
+
+func (b *buddyAdapter) UpdateGlobalVariable(id string, key string, value string, varType string, description string, settable bool, encrypted bool) (*buddyResponseGlobalVariable, error) {
+	reqBody, err := json.Marshal(&buddyRequestGlobalVariable{
+		Key:         key,
+		Value:       value,
+		Type:        varType,
+		Description: description,
+		Settable:    settable,
+		Encrypted:   encrypted,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(reqBody)
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%v/%v/%v", b.BuddyURL, "variables", id), bytes.NewBuffer(reqBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", b.Token))
+	req.Header.Set("Content-Type", "application/json")
 	resp, err := b.Do(req)
 	if err != nil {
 		return nil, err

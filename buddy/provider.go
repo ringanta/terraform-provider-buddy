@@ -13,14 +13,14 @@ func Provider() *schema.Provider {
 		Schema: map[string]*schema.Schema{
 			"buddy_url": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("BUDDY_URL", nil),
 				Description: "The URL to the Buddy workspace",
 			},
 			"token": {
 				Type:        schema.TypeString,
-				Required:    true,
-				Default:     schema.EnvDefaultFunc("BUDDY_TOKEN", nil),
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("BUDDY_TOKEN", nil),
 				Description: "Buddy personal access token",
 			},
 			"verify_ssl": {
@@ -29,6 +29,10 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("BUDDY_VERIFY_SSL", true),
 				Description: "Whether to verify TLS connection to the Buddy URL",
 			},
+		},
+
+		ResourcesMap: map[string]*schema.Resource{
+			"buddy_global_variable": resourceGlobalVariable(),
 		},
 
 		ConfigureContextFunc: configureProvider,

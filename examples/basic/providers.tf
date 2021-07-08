@@ -9,7 +9,4 @@ terraform {
   }
 }
 
-provider "buddy" {
-  buddy_url = ""
-  token     = ""
-}
+provider "buddy" {}

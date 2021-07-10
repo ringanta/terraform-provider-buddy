@@ -5,6 +5,6 @@ provider "ringanta.id/ringanta/buddy" {
   version     = "0.1.0"
   constraints = "0.1.0"
   hashes = [
-    "h1:jkZg7Q0Rv3AkP+o25Mk8/XAfLZAF3w00FAgzBuydwzQ=",
+    "h1:fyEEctZGOotYR6m8YaC+5F8gBMfPS4hEWkfkxIChEn8=",
   ]
 }

@@ -8,12 +8,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceGlobalVariable() *schema.Resource {
+func resourceWorkspaceVariable() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceGlobalVariableCreate,
-		ReadContext:   resourceGlobalVariableRead,
-		UpdateContext: resourceGlobalVariableUpdate,
-		DeleteContext: resourceGlobalVariableDelete,
+		CreateContext: resourceWorkspaceVariableCreate,
+		ReadContext:   resourceWorkpaceVariableRead,
+		UpdateContext: resourceWorkspaceVariableUpdate,
+		DeleteContext: resourceWorkpaceVariableDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -33,13 +33,13 @@ func resourceGlobalVariable() *schema.Resource {
 			"value_hash": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Hash of the encrypted variable",
+				Description: "Hash of the encrypted variable value",
 			},
 			"type": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Default:     "VAR",
-				Description: "Variable type. Can be VAR, SSH_KEY, or FILE",
+				Description: "Variable type. Currently only support VAR",
 			},
 			"description": {
 				Type:        schema.TypeString,
@@ -57,18 +57,18 @@ func resourceGlobalVariable() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
-				Description: "Flag to check whether variable encrypted",
+				Description: "Flag to decide whether variable encrypted",
 			},
 			"ssh_key": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: "Flag to check whether the variable is SSH key",
+				Description: "Flag to decide whether the variable is an SSH key",
 			},
 		},
 	}
 }
 
-func resourceGlobalVariableCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceWorkspaceVariableCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(buddyClient)
 
 	key := d.Get("key").(string)
@@ -84,10 +84,10 @@ func resourceGlobalVariableCreate(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	d.SetId(strconv.Itoa(globalVar.Id))
-	return resourceGlobalVariableRead(ctx, d, m)
+	return resourceWorkpaceVariableRead(ctx, d, m)
 }
 
-func resourceGlobalVariableRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceWorkpaceVariableRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(buddyClient)
 
 	id := d.Id()
@@ -129,7 +129,7 @@ func resourceGlobalVariableRead(ctx context.Context, d *schema.ResourceData, m i
 	return nil
 }
 
-func resourceGlobalVariableUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceWorkspaceVariableUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(buddyClient)
 
 	id := d.Id()
@@ -145,10 +145,10 @@ func resourceGlobalVariableUpdate(ctx context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 
-	return resourceGlobalVariableRead(ctx, d, m)
+	return resourceWorkpaceVariableRead(ctx, d, m)
 }
 
-func resourceGlobalVariableDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceWorkpaceVariableDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(buddyClient)
 
 	id := d.Id()

@@ -182,5 +182,12 @@ func resourceProjectVariableUpdate(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceProjectVariableDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(buddyClient)
+
+	id := d.Id()
+	err := client.DeleteVariable(id)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

@@ -132,29 +132,6 @@ func (b *buddyAdapter) UpdateWorkspaceVariable(id string, variable buddyRequestW
 	return &data, nil
 }
 
-func (b *buddyAdapter) DeleteWorkspaceVariable(id string) error {
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%v/%v/%v", b.BuddyURL, "variables", id), nil)
-	if err != nil {
-		return err
-	}
-
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", b.Token))
-	resp, err := b.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return fmt.Errorf("Expected return code is 204 but got %v. Failed to read response body with the following message: %v", resp.StatusCode, err.Error())
-		}
-		return fmt.Errorf("Expected return code is 204 but got %v with the following response body %v", resp.StatusCode, string(body))
-	}
-	return nil
-}
-
 func (b *buddyAdapter) CreateProjectVariable(variable buddyRequestProjectVariable) (*buddyResponseProjectVariable, error) {
 	reqBody, err := json.Marshal(&variable)
 	if err != nil {
@@ -258,4 +235,27 @@ func (b *buddyAdapter) UpdateProjectVariable(id string, variable buddyRequestPro
 		return nil, err
 	}
 	return &data, nil
+}
+
+func (b *buddyAdapter) DeleteVariable(id string) error {
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%v/%v/%v", b.BuddyURL, "variables", id), nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", b.Token))
+	resp, err := b.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 204 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("Expected return code is 204 but got %v. Failed to read response body with the following message: %v", resp.StatusCode, err.Error())
+		}
+		return fmt.Errorf("Expected return code is 204 but got %v with the following response body %v", resp.StatusCode, string(body))
+	}
+	return nil
 }

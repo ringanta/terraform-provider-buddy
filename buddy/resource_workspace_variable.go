@@ -168,7 +168,7 @@ func resourceWorkpaceVariableDelete(ctx context.Context, d *schema.ResourceData,
 	client := m.(buddyClient)
 
 	id := d.Id()
-	err := client.DeleteWorkspaceVariable(id)
+	err := client.DeleteVariable(id)
 	if err != nil {
 		return diag.FromErr(err)
 	}

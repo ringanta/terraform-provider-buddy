@@ -77,8 +77,16 @@ func resourceWorkspaceVariableCreate(ctx context.Context, d *schema.ResourceData
 	description := d.Get("description").(string)
 	settable := d.Get("settable").(bool)
 	encrypted := d.Get("encrypted").(bool)
+	variable := buddyRequestWorkspaceVariable{
+		Key:         key,
+		Value:       value,
+		Type:        varType,
+		Description: description,
+		Settable:    settable,
+		Encrypted:   encrypted,
+	}
 
-	globalVar, err := client.CreateGlobalVariable(key, value, varType, description, settable, encrypted)
+	globalVar, err := client.CreateWorkspaceVariable(variable)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -91,7 +99,7 @@ func resourceWorkpaceVariableRead(ctx context.Context, d *schema.ResourceData, m
 	client := m.(buddyClient)
 
 	id := d.Id()
-	data, err := client.ReadGlobalVariable(id)
+	data, err := client.ReadWorkspaceVariable(id)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -139,8 +147,16 @@ func resourceWorkspaceVariableUpdate(ctx context.Context, d *schema.ResourceData
 	description := d.Get("description").(string)
 	settable := d.Get("settable").(bool)
 	encrypted := d.Get("encrypted").(bool)
+	variable := buddyRequestWorkspaceVariable{
+		Key:         key,
+		Value:       value,
+		Type:        varType,
+		Description: description,
+		Settable:    settable,
+		Encrypted:   encrypted,
+	}
 
-	_, err := client.UpdateGlobalVariable(id, key, value, varType, description, settable, encrypted)
+	_, err := client.UpdateWorkspaceVariable(id, variable)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -152,7 +168,7 @@ func resourceWorkpaceVariableDelete(ctx context.Context, d *schema.ResourceData,
 	client := m.(buddyClient)
 
 	id := d.Id()
-	err := client.DeleteGlobalVariable(id)
+	err := client.DeleteWorkspaceVariable(id)
 	if err != nil {
 		return diag.FromErr(err)
 	}

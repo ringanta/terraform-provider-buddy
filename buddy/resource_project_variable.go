@@ -133,11 +133,11 @@ func resourceProjectVariableRead(ctx context.Context, d *schema.ResourceData, m 
 		return diag.FromErr(err)
 	}
 
-	if data.Encrypted {
-		if err := d.Set("value_hash", data.Value); err != nil {
-			return diag.FromErr(err)
-		}
-	} else {
+	if err := d.Set("value_hash", data.Value); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if !data.Encrypted {
 		if err := d.Set("value", data.Value); err != nil {
 			return diag.FromErr(err)
 		}
@@ -151,7 +151,34 @@ func resourceProjectVariableRead(ctx context.Context, d *schema.ResourceData, m 
 }
 
 func resourceProjectVariableUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return nil
+	client := m.(buddyClient)
+
+	id := d.Id()
+	key := d.Get("key").(string)
+	value := d.Get("value").(string)
+	varType := d.Get("type").(string)
+	description := d.Get("description").(string)
+	settable := d.Get("settable").(bool)
+	encrypted := d.Get("encrypted").(bool)
+	project := d.Get("project").(string)
+	variable := buddyRequestProjectVariable{
+		Key:         key,
+		Value:       value,
+		Type:        varType,
+		Description: description,
+		Settable:    settable,
+		Encrypted:   encrypted,
+		Project: buddyRequestProject{
+			Name: project,
+		},
+	}
+
+	_, err := client.UpdateProjectVariable(id, variable)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	return resourceProjectVariableRead(ctx, d, m)
 }
 
 func resourceProjectVariableDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

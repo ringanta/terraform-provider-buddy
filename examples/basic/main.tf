@@ -5,8 +5,8 @@ resource "buddy_workspace_variable" "self" {
 }
 
 resource "buddy_project_variable" "self" {
-  key = "TF_TEST_PROJECT_VAR"
-  value = "dummy"
-  project = "unique-payment-code-generator"
+  key       = "TF_TEST_PROJECT_VAR"
+  value     = "dummy"
+  project   = "unique-payment-code-generator"
   encrypted = true
 }

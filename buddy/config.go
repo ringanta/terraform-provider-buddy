@@ -77,4 +77,5 @@ type buddyClient interface {
 	DeleteWorkspaceVariable(id string) error
 	CreateProjectVariable(variable buddyRequestProjectVariable) (*buddyResponseProjectVariable, error)
 	ReadProjectVariable(id string) (*buddyResponseProjectVariable, error)
+	UpdateProjectVariable(id string, variable buddyRequestProjectVariable) (*buddyResponseProjectVariable, error)
 }

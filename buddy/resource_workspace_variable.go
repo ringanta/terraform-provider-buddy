@@ -124,11 +124,11 @@ func resourceWorkpaceVariableRead(ctx context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 
-	if data.Encrypted {
-		if err := d.Set("value_hash", data.Value); err != nil {
-			return diag.FromErr(err)
-		}
-	} else {
+	if err := d.Set("value_hash", data.Value); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if !data.Encrypted {
 		if err := d.Set("value", data.Value); err != nil {
 			return diag.FromErr(err)
 		}

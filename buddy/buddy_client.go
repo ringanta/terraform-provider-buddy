@@ -223,3 +223,39 @@ func (b *buddyAdapter) ReadProjectVariable(id string) (*buddyResponseProjectVari
 	}
 	return &data, nil
 }
+
+func (b *buddyAdapter) UpdateProjectVariable(id string, variable buddyRequestProjectVariable) (*buddyResponseProjectVariable, error) {
+	reqBody, err := json.Marshal(&variable)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(reqBody)
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%v/%v/%v", b.BuddyURL, "variables", id), bytes.NewBuffer(reqBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", b.Token))
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := b.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var data buddyResponseProjectVariable
+	if resp.StatusCode != 200 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("Expected return code is 200 but got %v. Failed to read response body with the following message: %v", resp.StatusCode, err.Error())
+		}
+		return nil, fmt.Errorf("Expected return code is 200 but got %v with the following response body %v", resp.StatusCode, string(body))
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+	return &data, nil
+}

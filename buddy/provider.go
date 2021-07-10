@@ -33,6 +33,7 @@ func Provider() *schema.Provider {
 
 		ResourcesMap: map[string]*schema.Resource{
 			"buddy_workspace_variable": resourceWorkspaceVariable(),
+			"buddy_project_variable":   resourceProjectVariable(),
 		},
 
 		ConfigureContextFunc: configureProvider,

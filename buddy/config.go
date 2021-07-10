@@ -16,6 +16,14 @@ type buddyAdapter struct {
 	*http.Client
 }
 
+type buddyProject struct {
+	URL         string `json:"url"`
+	HTMLURL     string `json:"html_url"`
+	Name        string `json:"name"`
+	DisplayName string `json:"display_name"`
+	Status      string `json:"status"`
+}
+
 type buddyResponseWorkspaceVariable struct {
 	Url         string `json:"url"`
 	Id          int    `json:"id"`
@@ -28,8 +36,15 @@ type buddyResponseWorkspaceVariable struct {
 }
 
 type buddyResponseProjectVariable struct {
-	buddyResponseWorkspaceVariable
-	Project buddyProject `json:"project"`
+	Url         string       `json:"url"`
+	Id          int          `json:"id"`
+	Key         string       `json:"key"`
+	Value       string       `json:"value"`
+	SSHKey      bool         `json:"ssh_key"`
+	Settable    bool         `json:"settable"`
+	Encrypted   bool         `json:"encrypted"`
+	Description string       `json:"description"`
+	Project     buddyProject `json:"project"`
 }
 
 type buddyRequestWorkspaceVariable struct {
@@ -41,17 +56,18 @@ type buddyRequestWorkspaceVariable struct {
 	Description string `json:"description"`
 }
 
-type buddyProject struct {
-	URL         string `json:"url"`
-	HTMLURL     string `json:"html_url"`
-	Name        string `json:"name"`
-	DisplayName string `json:"display_name"`
-	Status      string `json:"status"`
+type buddyRequestProject struct {
+	Name string `json:"name"`
 }
 
 type buddyRequestProjectVariable struct {
-	buddyRequestWorkspaceVariable
-	Project string `json:"project"`
+	Key         string              `json:"key"`
+	Value       string              `json:"value"`
+	Type        string              `json:"type"`
+	Settable    bool                `json:"settable"`
+	Encrypted   bool                `json:"encrypted"`
+	Description string              `json:"description"`
+	Project     buddyRequestProject `json:"project"`
 }
 
 type buddyClient interface {

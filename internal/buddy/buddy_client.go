@@ -40,6 +40,7 @@ func (b *buddyAdapter) CreateWorkspaceVariable(variable buddyRequestWorkspaceVar
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", b.Token))
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", user_agent)
 
 	resp, err := b.Do(req)
 	if err != nil {
@@ -70,6 +71,8 @@ func (b *buddyAdapter) ReadWorkspaceVariable(id string) (*buddyResponseWorkspace
 	}
 
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", b.Token))
+	req.Header.Set("User-Agent", user_agent)
+
 	resp, err := b.Do(req)
 	if err != nil {
 		return nil, err
@@ -110,6 +113,8 @@ func (b *buddyAdapter) UpdateWorkspaceVariable(id string, variable buddyRequestW
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", b.Token))
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", user_agent)
+
 	resp, err := b.Do(req)
 	if err != nil {
 		return nil, err
@@ -145,6 +150,7 @@ func (b *buddyAdapter) CreateProjectVariable(variable buddyRequestProjectVariabl
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", b.Token))
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", user_agent)
 
 	resp, err := b.Do(req)
 	if err != nil {
@@ -175,6 +181,8 @@ func (b *buddyAdapter) ReadProjectVariable(id string) (*buddyResponseProjectVari
 	}
 
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", b.Token))
+	req.Header.Set("User-Agent", user_agent)
+
 	resp, err := b.Do(req)
 	if err != nil {
 		return nil, err
@@ -215,6 +223,8 @@ func (b *buddyAdapter) UpdateProjectVariable(id string, variable buddyRequestPro
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", b.Token))
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", user_agent)
+
 	resp, err := b.Do(req)
 	if err != nil {
 		return nil, err
@@ -244,6 +254,8 @@ func (b *buddyAdapter) DeleteVariable(id string) error {
 	}
 
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", b.Token))
+	req.Header.Set("User-Agent", user_agent)
+
 	resp, err := b.Do(req)
 	if err != nil {
 		return err

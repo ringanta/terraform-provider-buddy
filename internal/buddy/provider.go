@@ -7,8 +7,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
+var (
+	user_agent string
+)
+
 // Provider - create a new Buddy provider
-func Provider() *schema.Provider {
+func Provider(version string) *schema.Provider {
+	user_agent = "terraform-buddy-provider/" + version
+
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"buddy_url": {

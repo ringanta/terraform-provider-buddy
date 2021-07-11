@@ -10,6 +10,10 @@ import (
 
 func resourceProjectVariable() *schema.Resource {
 	return &schema.Resource{
+		Description: "`buddy_project_variable` manages variable under the project scope.\n\n" +
+			"Project scoped variable is accessible to all pipelines in the project. " +
+			"Use this for variable to distribute a same value to multiple pipelines in the same project.",
+
 		CreateContext: resourceProjectVariableCreate,
 		ReadContext:   resourceProjectVariableRead,
 		UpdateContext: resourceProjectVariableUpdate,

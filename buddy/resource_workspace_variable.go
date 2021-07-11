@@ -10,6 +10,10 @@ import (
 
 func resourceWorkspaceVariable() *schema.Resource {
 	return &schema.Resource{
+		Description: "`buddy_workspace_variable` manages variable under the workspace scope.\n\n" +
+			"Variable under the workspace scoped is accessible by all projects under the workspace. " +
+			"Use this variable to distributed the same variable that is used by multiple projects.",
+
 		CreateContext: resourceWorkspaceVariableCreate,
 		ReadContext:   resourceWorkpaceVariableRead,
 		UpdateContext: resourceWorkspaceVariableUpdate,

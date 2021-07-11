@@ -1,23 +1,23 @@
 # Terraform Provider Buddy
 
+Terraform provider to manages resources on Buddy CI/CD platform.
+
+## Build
+
 Run the following command to build the provider
 
 ```shell
 make build
 ```
 
-## Test sample configuration
+Above command produces `terraform-provider-buddy` binary that you can inspect.
 
-First, build and install the provider.
+## Run sample configuration
+
+First, build and install the provider on your local machine.
 
 ```shell
 make install
 ```
 
-Then, run the following command to apply configuration
-
-```shell
-terraform init
-terraform plan -out=tfplan.out
-terraform apply tfplan.out
-```
+Then, see example under `examples/basic` to see the provider in action

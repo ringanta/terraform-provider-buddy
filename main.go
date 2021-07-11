@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 
-	"github.com/ringanta/terraform-provider-buddy/buddy"
+	"github.com/ringanta/terraform-provider-buddy/internal/buddy"
 )
 
 // Run terraform fmt to format Terraform project under the examples folder

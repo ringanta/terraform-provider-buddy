@@ -4,14 +4,14 @@ page_title: "buddy_project_variable Resource - terraform-provider-buddy"
 subcategory: ""
 description: |-
   buddy_project_variable manages variable under the project scope.
-  Project scoped variable is accessible to all pipelines in the project. Use this for variable to distribute a same value to multiple pipelines in the same project.
+  Project scoped variable is accessible to all pipelines in the project. Use this variable to store value that needed by multiple pipelines in the same project.
 ---
 
 # buddy_project_variable (Resource)
 
 `buddy_project_variable` manages variable under the project scope.
 
-Project scoped variable is accessible to all pipelines in the project. Use this for variable to distribute a same value to multiple pipelines in the same project.
+Project scoped variable is accessible to all pipelines in the project. Use this variable to store value that needed by multiple pipelines in the same project.
 
 ## Example Usage
 
@@ -52,7 +52,8 @@ Import is supported using the following syntax:
 
 ```shell
 # import existing project variable using its ID
-# Variable ID can be retrieve via Buddy API
-# See https://buddy.works/docs/api/general/environment-variables/list-environment-variables
+# Variable ID can be retrieve via Buddy API https://buddy.works/docs/api/general/environment-variables/list-environment-variables
+# Use this jq command to filter the result by a certain variable
+#   jq '.variables[] | select(.key == "<VARIABLE_NAME>")'
 terraform import buddy_project_variable.self 12345
 ```

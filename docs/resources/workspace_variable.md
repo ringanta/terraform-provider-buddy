@@ -4,14 +4,14 @@ page_title: "buddy_workspace_variable Resource - terraform-provider-buddy"
 subcategory: ""
 description: |-
   buddy_workspace_variable manages variable under the workspace scope.
-  Variable under the workspace scoped is accessible by all projects under the workspace. Use this variable to distributed the same variable that is used by multiple projects.
+  Variable under the workspace scoped is accessible by all projects under the workspace. Use this variable to store value that is needed across multiple projects.
 ---
 
 # buddy_workspace_variable (Resource)
 
 `buddy_workspace_variable` manages variable under the workspace scope.
 
-Variable under the workspace scoped is accessible by all projects under the workspace. Use this variable to distributed the same variable that is used by multiple projects.
+Variable under the workspace scoped is accessible by all projects under the workspace. Use this variable to store value that is needed across multiple projects.
 
 ## Example Usage
 
@@ -50,7 +50,8 @@ Import is supported using the following syntax:
 
 ```shell
 # import existing workspace variable using its ID
-# Variable ID can be retrieve via Buddy API
-# See https://buddy.works/docs/api/general/environment-variables/list-environment-variables
+# Variable ID can be retrieve via Buddy the following API https://buddy.works/docs/api/general/environment-variables/list-environment-variables
+# Use this jq command to filter the result by a certain variable
+#   jq '.variables[] | select(.key == "<VARIABLE_NAME>")'
 terraform import buddy_workspace_variable.self 12345
 ```

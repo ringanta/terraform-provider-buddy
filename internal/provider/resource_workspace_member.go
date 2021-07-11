@@ -10,7 +10,7 @@ import (
 
 func resourceWorkspaceMember() *schema.Resource {
 	return &schema.Resource{
-		Description: "`buddy_workspace_member` manages members on a Buddy workspace.\n\n" +
+		Description: "`buddy_workspace_member` manages member on a Buddy workspace.\n\n" +
 			"A new member can be invited into a workspace using their email address.",
 
 		CreateContext: resourceWorkspaceMemberCreate,

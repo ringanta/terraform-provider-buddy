@@ -44,4 +44,13 @@ resource "buddy_workspace_variable" "self" {
 - **ssh_key** (Boolean) Flag to decide whether the variable is an SSH key
 - **value_hash** (String) Hash of the encrypted variable value
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# import existing workspace variable using its ID
+# Variable ID can be retrieve via Buddy API
+# See https://buddy.works/docs/api/general/environment-variables/list-environment-variables
+terraform import buddy_workspace_variable.self 12345
+```

@@ -15,6 +15,7 @@ func resourceWorkspaceMember() *schema.Resource {
 
 		CreateContext: resourceWorkspaceMemberCreate,
 		ReadContext:   resourceWorkspaceMemberRead,
+		UpdateContext: resourceWorkspaceMemberUpdate,
 		DeleteContext: resourceWorkspaceMemberDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -31,6 +32,12 @@ func resourceWorkspaceMember() *schema.Resource {
 				Computed:    true,
 				Description: "Member name",
 			},
+			"admin": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Flag to indicate whether member has admin right",
+			},
 		},
 	}
 }
@@ -39,13 +46,20 @@ func resourceWorkspaceMemberCreate(ctx context.Context, d *schema.ResourceData, 
 	client := m.(buddyClient)
 
 	email := d.Get("email").(string)
+	admin := d.Get("admin").(bool)
 
 	member, err := client.CreateWorkspaceMember(email)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(strconv.Itoa(member.Id))
+	id := strconv.Itoa(member.Id)
+	_, err = client.SetAdminRight(id, admin)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	d.SetId(id)
 	return resourceWorkspaceMemberRead(ctx, d, m)
 }
 
@@ -66,7 +80,24 @@ func resourceWorkspaceMemberRead(ctx context.Context, d *schema.ResourceData, m 
 		return diag.FromErr(err)
 	}
 
+	if err := d.Set("admin", member.Admin); err != nil {
+		return diag.FromErr(err)
+	}
+
 	return nil
+}
+
+func resourceWorkspaceMemberUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(buddyClient)
+	id := d.Id()
+	admin := d.Get("admin").(bool)
+
+	_, err := client.SetAdminRight(id, admin)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	return resourceWorkspaceMemberRead(ctx, d, m)
 }
 
 func resourceWorkspaceMemberDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

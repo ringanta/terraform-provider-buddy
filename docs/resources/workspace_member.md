@@ -30,6 +30,7 @@ resource "buddy_workspace_member" "self" {
 
 ### Optional
 
+- **admin** (Boolean) Flag to indicate whether member has admin right
 - **id** (String) The ID of this resource.
 
 ### Read-Only

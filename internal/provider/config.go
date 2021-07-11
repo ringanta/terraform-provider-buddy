@@ -93,4 +93,5 @@ type buddyClient interface {
 	CreateWorkspaceMember(email string) (*buddyResponseWorkspaceMember, error)
 	ReadWorkspaceMember(id string) (*buddyResponseWorkspaceMember, error)
 	DeleteWorkspaceMember(id string) error
+	SetAdminRight(id string, admin bool) (*buddyResponseWorkspaceMember, error)
 }

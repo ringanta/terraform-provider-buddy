@@ -1,4 +1,4 @@
-package buddy
+package provider
 
 import (
 	"context"
@@ -11,8 +11,8 @@ var (
 	user_agent string
 )
 
-// Provider - create a new Buddy provider
-func Provider(version string) *schema.Provider {
+// New - create a new Buddy provider
+func New(version string) *schema.Provider {
 	user_agent = "terraform-buddy-provider/" + version
 
 	return &schema.Provider{

@@ -3,8 +3,7 @@ package main
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-
-	"github.com/ringanta/terraform-provider-buddy/internal/buddy"
+	"github.com/ringanta/terraform-provider-buddy/internal/provider"
 )
 
 // Run terraform fmt to format Terraform project under the examples folder
@@ -21,7 +20,7 @@ var (
 
 func main() {
 	opts := &plugin.ServeOpts{ProviderFunc: func() *schema.Provider {
-		return buddy.Provider(version)
+		return provider.New(version)
 	}}
 
 	plugin.Serve(opts)

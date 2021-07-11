@@ -1,4 +1,4 @@
-package buddy
+package provider
 
 import (
 	"bytes"

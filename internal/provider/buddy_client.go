@@ -271,3 +271,111 @@ func (b *buddyAdapter) DeleteVariable(id string) error {
 	}
 	return nil
 }
+
+func (b *buddyAdapter) CreateWorkspaceMember(email string) (*buddyResponseWorkspaceMember, error) {
+	reqBody, err := json.Marshal(&struct {
+		Email string `json:"email"`
+	}{
+		Email: email,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%v/%v", b.BuddyURL, "members"), bytes.NewBuffer(reqBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", b.Token))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", user_agent)
+
+	resp, err := b.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var data buddyResponseWorkspaceMember
+	if resp.StatusCode != 201 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("Expected return code is 201 but got %v. Failed to read response body with the following message: %v", resp.StatusCode, err.Error())
+		}
+		return nil, fmt.Errorf("Expected return code is 201 but got %v with the following response body %v", resp.StatusCode, string(body))
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+	return &data, nil
+}
+
+func (b *buddyAdapter) ReadWorkspaceMember(id string) (*buddyResponseWorkspaceMember, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%v/%v/%v", b.BuddyURL, "members", id), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", b.Token))
+	req.Header.Set("User-Agent", user_agent)
+
+	resp, err := b.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var data buddyResponseWorkspaceMember
+	if resp.StatusCode == 404 {
+		return &data, nil
+	}
+
+	if resp.StatusCode != 200 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("Expected return code is 200 but got %v. Failed to read response body with the following message: %v", resp.StatusCode, err.Error())
+		}
+		return nil, fmt.Errorf("Expected return code is 200 but got %v with the following response body %v", resp.StatusCode, string(body))
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+	return &data, nil
+}
+
+func (b *buddyAdapter) DeleteWorkspaceMember(id string) error {
+	err := b.doDelete(id, "members")
+
+	return err
+}
+
+func (b *buddyAdapter) doDelete(id string, urlPath string) error {
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%v/%v/%v", b.BuddyURL, urlPath, id), nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", b.Token))
+	req.Header.Set("User-Agent", user_agent)
+
+	resp, err := b.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 204 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("Expected return code is 204 but got %v. Failed to read response body with the following message: %v", resp.StatusCode, err.Error())
+		}
+		return fmt.Errorf("Expected return code is 204 but got %v with the following response body %v", resp.StatusCode, string(body))
+	}
+
+	return nil
+}

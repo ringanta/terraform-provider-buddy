@@ -4,7 +4,7 @@ terraform {
   required_providers {
     buddy = {
       source  = "ringanta.id/ringanta/buddy"
-      version = "0.1"
+      version = "0.2"
     }
   }
 }

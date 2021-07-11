@@ -47,6 +47,18 @@ type buddyResponseProjectVariable struct {
 	Project     buddyProject `json:"project"`
 }
 
+type buddyResponseWorkspaceMember struct {
+	Url            string `json:"url"`
+	HTMLURL        string `json:"html_url"`
+	Id             int    `json:"id"`
+	Name           string `json:"name"`
+	AvatarUrl      string `json:"avatar_url"`
+	Title          string `json:"title"`
+	Email          string `json:"email"`
+	Admin          bool   `json:"admin"`
+	WorkspaceOwner bool   `json:"workspace_owner"`
+}
+
 type buddyRequestWorkspaceVariable struct {
 	Key         string `json:"key"`
 	Value       string `json:"value"`
@@ -78,4 +90,7 @@ type buddyClient interface {
 	ReadProjectVariable(id string) (*buddyResponseProjectVariable, error)
 	UpdateProjectVariable(id string, variable buddyRequestProjectVariable) (*buddyResponseProjectVariable, error)
 	DeleteVariable(id string) error
+	CreateWorkspaceMember(email string) (*buddyResponseWorkspaceMember, error)
+	ReadWorkspaceMember(id string) (*buddyResponseWorkspaceMember, error)
+	DeleteWorkspaceMember(id string) error
 }

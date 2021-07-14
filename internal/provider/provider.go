@@ -44,6 +44,10 @@ func New(version string) *schema.Provider {
 			"buddy_project_variable":   resourceProjectVariable(),
 		},
 
+		DataSourcesMap: map[string]*schema.Resource{
+			"buddy_workspace_member": dataSourceWorkspaceMember(),
+		},
+
 		ConfigureContextFunc: configureProvider,
 	}
 }

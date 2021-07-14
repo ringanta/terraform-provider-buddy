@@ -399,6 +399,39 @@ func (b *buddyAdapter) DeleteProjectMember(projectName string, memberId string) 
 	return b.doDelete(urlPath)
 }
 
+func (b *buddyAdapter) GetUser(email string) (*buddyWorkspaceMember, error) {
+	response, err := b.listUsers(1, 1000)
+	if err != nil {
+		return nil, err
+	}
+
+	var data buddyWorkspaceMember
+	for _, member := range response.Members {
+		if member.Email == email {
+			data = member
+		}
+	}
+
+	return &data, nil
+}
+
+func (b *buddyAdapter) listUsers(pageNo int, userPerPage int) (*buddyResponseListWorkspaceMember, error) {
+	urlPath := fmt.Sprintf("members?page=%v&per_page=%v&sort_name=name", pageNo, userPerPage)
+	var data buddyResponseListWorkspaceMember
+
+	response, err := b.doRead(urlPath)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.NewDecoder(bytes.NewReader(response)).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
+}
+
 func (b *buddyAdapter) doRead(urlPath string) ([]byte, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%v/%v", b.BuddyURL, urlPath), nil)
 	if err != nil {

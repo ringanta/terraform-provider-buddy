@@ -28,6 +28,16 @@ type buddyId struct {
 	Id int `json:"id"`
 }
 
+type buddyWorkspaceMember struct {
+	Url       string `json:"url"`
+	HTMLURL   string `json:"html_url"`
+	Id        int    `json:"id"`
+	Name      string `json:"name"`
+	AvatarUrl string `json:"avatar_url"`
+	Title     string `json:"title"`
+	Email     string `json:"email"`
+}
+
 type buddyPermissionSet struct {
 	URL                   string `json:"url"`
 	HTMLURL               string `json:"html_url"`
@@ -87,6 +97,12 @@ type buddyResponseProjectMember struct {
 	PermissionSet  buddyPermissionSet `json:"permission_set"`
 }
 
+type buddyResponseListWorkspaceMember struct {
+	Url     string                 `json:"url"`
+	HTMLURL string                 `json:"html_url"`
+	Members []buddyWorkspaceMember `json:"members"`
+}
+
 type buddyRequestWorkspaceVariable struct {
 	Key         string `json:"key"`
 	Value       string `json:"value"`
@@ -140,4 +156,6 @@ type buddyClient interface {
 	ReadProjectMember(projectName string, memberId string) (*buddyResponseProjectMember, error)
 	UpdateProjectMember(projectName string, memberId string, variable buddyRequestPermissionSet) (*buddyResponseProjectMember, error)
 	DeleteProjectMember(projectName string, memberId string) error
+
+	GetUser(email string) (*buddyWorkspaceMember, error)
 }

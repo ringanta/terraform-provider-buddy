@@ -105,7 +105,9 @@ func (b *buddyAdapter) UpdateWorkspaceVariable(id string, variable buddyRequestW
 		return nil, err
 	}
 
-	response, err := b.doPatch(id, "variables", reqBody)
+	urlPath := fmt.Sprintf("variables/%v", id)
+
+	response, err := b.doPatch(urlPath, reqBody)
 	if err != nil {
 		return nil, err
 	}
@@ -197,7 +199,9 @@ func (b *buddyAdapter) UpdateProjectVariable(id string, variable buddyRequestPro
 		return nil, err
 	}
 
-	response, err := b.doPatch(id, "variables", reqBody)
+	urlPath := fmt.Sprintf("variables/%v", id)
+
+	response, err := b.doPatch(urlPath, reqBody)
 	if err != nil {
 		return nil, err
 	}
@@ -212,9 +216,9 @@ func (b *buddyAdapter) UpdateProjectVariable(id string, variable buddyRequestPro
 }
 
 func (b *buddyAdapter) DeleteVariable(id string) error {
-	err := b.doDelete(id, "variables")
+	urlPath := fmt.Sprintf("variables/%v", id)
 
-	return err
+	return b.doDelete(urlPath)
 }
 
 func (b *buddyAdapter) CreateWorkspaceMember(email string) (*buddyResponseWorkspaceMember, error) {
@@ -294,9 +298,9 @@ func (b *buddyAdapter) ReadWorkspaceMember(id string) (*buddyResponseWorkspaceMe
 }
 
 func (b *buddyAdapter) DeleteWorkspaceMember(id string) error {
-	err := b.doDelete(id, "members")
+	urlPath := fmt.Sprintf("members/%v", id)
 
-	return err
+	return b.doDelete(urlPath)
 }
 
 func (b *buddyAdapter) SetAdminRight(id string, admin bool) (*buddyResponseWorkspaceMember, error) {
@@ -309,7 +313,9 @@ func (b *buddyAdapter) SetAdminRight(id string, admin bool) (*buddyResponseWorks
 		return nil, err
 	}
 
-	response, err := b.doPatch(id, "members", reqBody)
+	urlPath := fmt.Sprintf("members/%v", id)
+
+	response, err := b.doPatch(urlPath, reqBody)
 	if err != nil {
 		return nil, err
 	}
@@ -323,8 +329,139 @@ func (b *buddyAdapter) SetAdminRight(id string, admin bool) (*buddyResponseWorks
 	return &data, nil
 }
 
-func (b *buddyAdapter) doPatch(id string, urlPath string, reqBody []byte) ([]byte, error) {
-	req, err := http.NewRequest("PATCH", fmt.Sprintf("%v/%v/%v", b.BuddyURL, urlPath, id), bytes.NewBuffer(reqBody))
+func (b *buddyAdapter) CreateProjectMember(projectName string, variable buddyRequestProjectMember) (*buddyResponseProjectMember, error) {
+	reqBody, err := json.Marshal(&variable)
+	if err != nil {
+		return nil, err
+	}
+
+	urlPath := fmt.Sprintf("%v/%v/%v", "projects", projectName, "members")
+	response, err := b.doCreate(urlPath, reqBody)
+	if err != nil {
+		return nil, err
+	}
+
+	var data buddyResponseProjectMember
+	err = json.NewDecoder(bytes.NewReader(response)).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
+}
+
+func (b *buddyAdapter) ReadProjectMember(projectName string, memberId string) (*buddyResponseProjectMember, error) {
+	urlPath := fmt.Sprintf("%v/%v/%v/%v", "projects", projectName, "members", memberId)
+	var data buddyResponseProjectMember
+
+	response, err := b.doRead(urlPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if response == nil {
+		return &data, nil
+	}
+
+	err = json.NewDecoder(bytes.NewReader(response)).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
+}
+
+func (b *buddyAdapter) UpdateProjectMember(projectName string, memberId string, variable buddyRequestPermissionSet) (*buddyResponseProjectMember, error) {
+	urlPath := fmt.Sprintf("%v/%v/%v/%v", "projects", projectName, "members", memberId)
+	var data buddyResponseProjectMember
+
+	reqBody, err := json.Marshal(&variable)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := b.doPatch(urlPath, reqBody)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.NewDecoder(bytes.NewReader(response)).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
+}
+
+func (b *buddyAdapter) DeleteProjectMember(projectName string, memberId string) error {
+	urlPath := fmt.Sprintf("%v/%v/%v/%v", "projects", projectName, "members", memberId)
+
+	return b.doDelete(urlPath)
+}
+
+func (b *buddyAdapter) doRead(urlPath string) ([]byte, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%v/%v", b.BuddyURL, urlPath), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", b.Token))
+	req.Header.Set("User-Agent", user_agent)
+
+	resp, err := b.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var data []byte
+
+	if resp.StatusCode == 404 {
+		return data, nil
+	}
+
+	data, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to read response body while performing doRead with the following error message: %v", err.Error())
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("Expected return code is 200 but got %v with the following response body %v", resp.StatusCode, string(data))
+	}
+
+	return data, nil
+}
+
+func (b *buddyAdapter) doCreate(urlPath string, reqBody []byte) ([]byte, error) {
+	req, err := http.NewRequest("POST", fmt.Sprintf("%v/%v", b.BuddyURL, urlPath), bytes.NewBuffer(reqBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", b.Token))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", user_agent)
+
+	resp, err := b.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to read response body while performing doCreate with the following error message: %v", err.Error())
+	}
+
+	if resp.StatusCode != 201 {
+		return nil, fmt.Errorf("Expected return code is 201 but got %v with the following response body %v", resp.StatusCode, string(data))
+	}
+
+	return data, nil
+}
+
+func (b *buddyAdapter) doPatch(urlPath string, reqBody []byte) ([]byte, error) {
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%v/%v", b.BuddyURL, urlPath), bytes.NewBuffer(reqBody))
 	if err != nil {
 		return nil, err
 	}
@@ -351,8 +488,8 @@ func (b *buddyAdapter) doPatch(id string, urlPath string, reqBody []byte) ([]byt
 	return data, nil
 }
 
-func (b *buddyAdapter) doDelete(id string, urlPath string) error {
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%v/%v/%v", b.BuddyURL, urlPath, id), nil)
+func (b *buddyAdapter) doDelete(urlPath string) error {
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%v/%v", b.BuddyURL, urlPath), nil)
 	if err != nil {
 		return err
 	}

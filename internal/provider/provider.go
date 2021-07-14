@@ -40,6 +40,7 @@ func New(version string) *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"buddy_workspace_variable": resourceWorkspaceVariable(),
 			"buddy_workspace_member":   resourceWorkspaceMember(),
+			"buddy_project_member":     resourceProjectMember(),
 			"buddy_project_variable":   resourceProjectVariable(),
 		},
 

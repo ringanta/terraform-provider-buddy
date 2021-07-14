@@ -24,6 +24,21 @@ type buddyProject struct {
 	Status      string `json:"status"`
 }
 
+type buddyId struct {
+	Id int `json:"id"`
+}
+
+type buddyPermissionSet struct {
+	URL                   string `json:"url"`
+	HTMLURL               string `json:"html_url"`
+	Id                    int    `json:"id"`
+	Name                  string `json:"name"`
+	Description           string `json:"description"`
+	Type                  string `json:"type"`
+	RepositoryAccessLevel string `json:"repository_access_level"`
+	PipelineAccessLevel   string `json:"pipeline_access_level"`
+}
+
 type buddyResponseWorkspaceVariable struct {
 	Url         string `json:"url"`
 	Id          int    `json:"id"`
@@ -59,6 +74,19 @@ type buddyResponseWorkspaceMember struct {
 	WorkspaceOwner bool   `json:"workspace_owner"`
 }
 
+type buddyResponseProjectMember struct {
+	Url            string             `json:"url"`
+	HTMLURL        string             `json:"html_url"`
+	Id             int                `json:"id"`
+	Name           string             `json:"name"`
+	AvatarUrl      string             `json:"avatar_url"`
+	Title          string             `json:"title"`
+	Email          string             `json:"email"`
+	Admin          bool               `json:"admin"`
+	WorkspaceOwner bool               `json:"workspace_owner"`
+	PermissionSet  buddyPermissionSet `json:"permission_set"`
+}
+
 type buddyRequestWorkspaceVariable struct {
 	Key         string `json:"key"`
 	Value       string `json:"value"`
@@ -82,16 +110,34 @@ type buddyRequestProjectVariable struct {
 	Project     buddyRequestProject `json:"project"`
 }
 
+type buddyRequestProjectMember struct {
+	Id            string  `json:"id"`
+	PermissionSet buddyId `json:"permission_set"`
+}
+
+type buddyRequestPermissionSet struct {
+	PermissionSet buddyId `json:"permission_set"`
+}
+
 type buddyClient interface {
 	CreateWorkspaceVariable(variable buddyRequestWorkspaceVariable) (*buddyResponseWorkspaceVariable, error)
 	ReadWorkspaceVariable(id string) (*buddyResponseWorkspaceVariable, error)
 	UpdateWorkspaceVariable(id string, variable buddyRequestWorkspaceVariable) (*buddyResponseWorkspaceVariable, error)
+
 	CreateProjectVariable(variable buddyRequestProjectVariable) (*buddyResponseProjectVariable, error)
 	ReadProjectVariable(id string) (*buddyResponseProjectVariable, error)
 	UpdateProjectVariable(id string, variable buddyRequestProjectVariable) (*buddyResponseProjectVariable, error)
+
 	DeleteVariable(id string) error
+
 	CreateWorkspaceMember(email string) (*buddyResponseWorkspaceMember, error)
 	ReadWorkspaceMember(id string) (*buddyResponseWorkspaceMember, error)
 	DeleteWorkspaceMember(id string) error
+
 	SetAdminRight(id string, admin bool) (*buddyResponseWorkspaceMember, error)
+
+	CreateProjectMember(projectName string, variable buddyRequestProjectMember) (*buddyResponseProjectMember, error)
+	ReadProjectMember(projectName string, memberId string) (*buddyResponseProjectMember, error)
+	UpdateProjectMember(projectName string, memberId string, variable buddyRequestPermissionSet) (*buddyResponseProjectMember, error)
+	DeleteProjectMember(projectName string, memberId string) error
 }

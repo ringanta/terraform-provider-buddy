@@ -1,0 +1,1 @@
+terraform import buddy_project_member.self 'my-project:12345'
